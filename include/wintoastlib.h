@@ -136,6 +136,7 @@ namespace WinToastLib {
         void setExpiration(_In_ INT64 millisecondsFromNow);
         void setScenario(_In_ Scenario scenario);
         void addAction(_In_ std::wstring const& label);
+        void removeAction(_In_ std::wstring const& label);
 
         std::size_t textFieldsCount() const;
         std::size_t actionsCount() const;

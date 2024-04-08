@@ -620,13 +620,15 @@ HRESULT WinToast::createShellLinkHelper() {
     Util::defaultShellLinkPath(_appName, slPath);
     Util::defaultExecutablePath(exePath);
     ComPtr<IShellLinkW> shellLink;
+    std::wstring workingDir(exePath);
+    workingDir = workingDir.substr(0, workingDir.find_last_of(L"/\\"));
     HRESULT hr = CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&shellLink));
     if (SUCCEEDED(hr)) {
         hr = shellLink->SetPath(exePath);
         if (SUCCEEDED(hr)) {
             hr = shellLink->SetArguments(L"");
             if (SUCCEEDED(hr)) {
-                hr = shellLink->SetWorkingDirectory(exePath);
+                hr = shellLink->SetWorkingDirectory(workingDir.c_str());
                 if (SUCCEEDED(hr)) {
                     ComPtr<IPropertyStore> propertyStore;
                     hr = shellLink.As(&propertyStore);
@@ -1280,6 +1282,10 @@ void WinToastTemplate::setAttributionText(_In_ std::wstring const& attributionTe
 
 void WinToastTemplate::addAction(_In_ std::wstring const& label) {
     _actions.push_back(label);
+}
+
+void WinToastTemplate::removeAction(_In_ std::wstring const& label) {
+    _actions.erase(std::remove(_actions.begin(), _actions.end(), label), _actions.end());
 }
 
 std::size_t WinToastTemplate::textFieldsCount() const {
